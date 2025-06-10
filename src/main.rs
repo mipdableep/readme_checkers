@@ -1,0 +1,3 @@
+mod checkers;
+
+fn main() {}
