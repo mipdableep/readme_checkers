@@ -79,6 +79,68 @@ impl Board {
         board
     }
 }
+
+pub fn get_leagal_moves(board: &Board, loc: Location, last_move: Move) -> Vec<Location> {
+    let Some(piece) = board
+        .loc_index(&loc)
+        .expect("trying to move piece at {loc:?}")
+    else {
+        panic!(
+            "requested moves for empty piece - row {}, col {}",
+            loc.row, loc.col
+        )
+    };
+
+    match piece {
+        PieceType::Black | PieceType::White => get_moves_soldier(board, loc, piece, last_move),
+        PieceType::BlackQueen | PieceType::WhiteQueen => get_moves_queen(board, loc),
+    }
+}
+
+fn get_moves_soldier(
+    board: &Board,
+    loc: Location,
+    piece: PieceType,
+    last_move: Move,
+) -> Vec<Location> {
+    let mut ret = vec![];
+    if last_move.to == loc {
+        ret.push(get_possible_move_soldier(board, loc, piece, (-1, -1)));
+        ret.push(get_possible_move_soldier(board, loc, piece, (-1, 1)));
+    }
+
+    ret.push(get_possible_move_soldier(board, loc, piece, (1, 1)));
+    ret.push(get_possible_move_soldier(board, loc, piece, (1, -1)));
+    todo!()
+}
+
+fn get_possible_move_soldier(
+    board: &Board,
+    loc: Location,
+    moving_piece: PieceType,
+    modif: (i8, i8),
+) -> Option<Location> {
+    let new_loc = loc + modif;
+    let Ok(idx) = board.loc_index(&new_loc) else {
+        return None;
+    };
+    let Some(piece) = idx else {
+        return Some(new_loc);
+    };
+    if piece.get_color() == moving_piece.get_color() {
+        None
+    } else {
+        match board.loc_index(&(new_loc + modif)) {
+            Ok(None) => Some(new_loc + modif),
+            _ => None,
+        }
+    }
+}
+
+fn get_moves_queen(board: &Board, loc: Location) -> Vec<Location> {
+    todo!()
+}
+
 #[cfg(test)]
 mod game_test {
     use super::*;
