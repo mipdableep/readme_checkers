@@ -1,3 +1,8 @@
 mod checkers;
 
-fn main() {}
+use checkers::game;
+
+fn main() {
+    let board = game::Board::new_game_board();
+    println!("{board}");
+}

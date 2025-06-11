@@ -1,6 +1,6 @@
 use color_eyre::{eyre::eyre, Result};
 use derive_more::derive::{Deref, DerefMut};
-use std::ops::Add;
+use std::{fmt::Display, ops::Add};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PieceType {
@@ -25,7 +25,7 @@ enum Color {
     White,
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Copy, Clone)]
+#[derive(Debug, Default, PartialEq, Eq, Copy, Clone, PartialOrd, Ord)]
 pub struct Location {
     row: i8,
     col: i8,
@@ -50,8 +50,51 @@ pub struct Move {
     to: Location,
 }
 
+impl Move {
+    pub fn new(from: Location, to: Location) -> Self {
+        Self { from, to }
+    }
+}
+
 #[derive(Deref, DerefMut)]
 pub struct Board([[Option<PieceType>; 8]; 8]);
+
+impl Display for Board {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut ret = String::new();
+
+        ret.push(' ');
+        for c in 'A'..='H' {
+            ret.push_str("   ");
+            ret.push(c);
+        }
+
+        for (r_idx, row) in self.iter().enumerate() {
+            ret.push_str(&format!("\n {}", r_idx + 1));
+            for sq in row.iter() {
+                ret.push_str(" [");
+                match sq {
+                    Some(PieceType::Black) => ret.push('b'),
+                    Some(PieceType::BlackQueen) => ret.push('B'),
+                    Some(PieceType::White) => ret.push('w'),
+                    Some(PieceType::WhiteQueen) => ret.push('W'),
+                    None => ret.push(' '),
+                }
+                ret.push(']')
+            }
+            ret.push_str(&format!(" {}", r_idx + 1));
+        }
+
+        ret.push('\n');
+        ret.push(' ');
+        for c in 'A'..='H' {
+            ret.push_str("   ");
+            ret.push(c);
+        }
+
+        f.write_str(&ret)
+    }
+}
 
 impl Board {
     pub fn loc_index(&self, loc: &Location) -> Result<Option<PieceType>> {
