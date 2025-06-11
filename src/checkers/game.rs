@@ -153,10 +153,14 @@ fn get_moves_soldier(
 
     ret.push(get_possible_move_soldier(board, loc, piece, (1, 1)));
     ret.push(get_possible_move_soldier(board, loc, piece, (1, -1)));
+    #[allow(unused_mut)]
     let mut ret = ret
         .iter()
         .filter_map(|loc_option| *loc_option)
         .collect::<Vec<Location>>();
+    #[cfg(test)]
+    ret.sort();
+
     ret
 }
 
@@ -215,5 +219,18 @@ mod game_test {
                 }
             }
         }
+    }
+    #[test]
+    fn basic_movment() {
+        let loc_0 = Location::new(0, 0);
+        let mut board = Board::new_game_board();
+        assert_eq!(
+            vec![Location::new(3, 1)],
+            get_leagal_moves(&board, Location::new(2, 0), Move::new(loc_0, loc_0))
+        );
+        let mut v = vec![Location::new(3, 1), Location::new(3, 3)];
+        v.sort();
+        let moves = get_leagal_moves(&board, Location::new(2, 2), Move::new(loc_0, loc_0));
+        assert_eq!(v, moves);
     }
 }
