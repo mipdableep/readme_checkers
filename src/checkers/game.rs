@@ -116,7 +116,6 @@ impl Board {
                     };
                 };
             }
-            println!("{row:?}");
         }
 
         board
@@ -154,7 +153,11 @@ fn get_moves_soldier(
 
     ret.push(get_possible_move_soldier(board, loc, piece, (1, 1)));
     ret.push(get_possible_move_soldier(board, loc, piece, (1, -1)));
-    todo!()
+    let mut ret = ret
+        .iter()
+        .filter_map(|loc_option| *loc_option)
+        .collect::<Vec<Location>>();
+    ret
 }
 
 fn get_possible_move_soldier(
