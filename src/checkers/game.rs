@@ -59,8 +59,8 @@ impl Move {
 #[derive(Deref, DerefMut)]
 pub struct Board([[Option<PieceType>; 8]; 8]);
 
-impl Display for Board {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+impl Board {
+    pub fn print_board(&self) {
         let mut ret = String::new();
 
         ret.push(' ');
@@ -92,11 +92,8 @@ impl Display for Board {
             ret.push(c);
         }
 
-        f.write_str(&ret)
+        println!("{ret}");
     }
-}
-
-impl Board {
     pub fn loc_index(&self, loc: &Location) -> Result<Option<PieceType>> {
         match (loc.row, loc.col) {
             (0..8, 0..8) => Ok(self[loc.row as usize][loc.col as usize]),
