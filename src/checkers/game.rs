@@ -60,7 +60,42 @@ impl Move {
 pub struct Board([[Option<PieceType>; 8]; 8]);
 
 impl Board {
-    pub fn print_board(&self) {
+    pub fn print_board_index(&self) {
+        let mut ret = String::new();
+
+        ret.push(' ');
+        for c in '0'..='7' {
+            ret.push_str("   ");
+            ret.push(c);
+        }
+
+        for (r_idx, row) in self.iter().enumerate() {
+            ret.push_str(&format!("\n {}", r_idx));
+            for sq in row.iter() {
+                ret.push_str(" [");
+                match sq {
+                    Some(PieceType::Black) => ret.push('b'),
+                    Some(PieceType::BlackQueen) => ret.push('B'),
+                    Some(PieceType::White) => ret.push('w'),
+                    Some(PieceType::WhiteQueen) => ret.push('W'),
+                    None => ret.push(' '),
+                }
+                ret.push(']')
+            }
+            ret.push_str(&format!(" {}", r_idx));
+        }
+
+        ret.push('\n');
+        ret.push(' ');
+        for c in '0'..='7' {
+            ret.push_str("   ");
+            ret.push(c);
+        }
+
+        println!("{ret}");
+    }
+
+    pub fn print_board_squares(&self) {
         let mut ret = String::new();
 
         ret.push(' ');
@@ -116,6 +151,9 @@ impl Board {
         }
 
         board
+    }
+    pub fn new() -> Self {
+        Board([[None; 8]; 8])
     }
 }
 
