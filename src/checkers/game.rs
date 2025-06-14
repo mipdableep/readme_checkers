@@ -180,14 +180,65 @@ fn get_moves_soldier(
     piece: PieceType,
     last_move: Move,
 ) -> Vec<Location> {
-    let mut ret = vec![];
-    if last_move.to == loc {
-        ret.push(get_possible_move_soldier(board, loc, piece, (-1, -1)));
-        ret.push(get_possible_move_soldier(board, loc, piece, (-1, 1)));
+    match (last_move.to == loc, piece.get_color()) {
+        (true, Color::Black) => get_moves_soldier_from_modif_vec(
+            board,
+            loc,
+            piece,
+            vec![
+                ((-1, -1), false),
+                ((-1, 1), false),
+                ((1, 1), true),
+                ((1, -1), true),
+            ],
+        ),
+        (true, Color::White) => get_moves_soldier_from_modif_vec(
+            board,
+            loc,
+            piece,
+            vec![
+                ((1, 1), false),
+                ((1, -1), false),
+                ((-1, -1), true),
+                ((-1, 1), true),
+            ],
+        ),
+        (false, Color::Black) => get_moves_soldier_from_modif_vec(
+            board,
+            loc,
+            piece,
+            vec![((-1, -1), false), ((-1, 1), false)],
+        ),
+        (false, Color::White) => get_moves_soldier_from_modif_vec(
+            board,
+            loc,
+            piece,
+            vec![((1, 1), false), ((1, -1), false)],
+        ),
+    }
+}
+
+fn get_moves_soldier_from_modif_vec(
+    board: &Board,
+    loc: Location,
+    moving_piece: PieceType,
+    // modif + eat
+    modifs: Vec<((i8, i8), bool)>,
+) -> Vec<Location> {
+    let mut ret = Vec::with_capacity(modifs.len());
+    for (m, eat) in modifs {
+        if eat {
+            ret.push(get_possible_eat_soldier(board, loc, moving_piece, m));
+        } else {
+            ret.push(get_possible_move_or_eat_soldier(
+                board,
+                loc,
+                moving_piece,
+                m,
+            ));
+        }
     }
 
-    ret.push(get_possible_move_soldier(board, loc, piece, (1, 1)));
-    ret.push(get_possible_move_soldier(board, loc, piece, (1, -1)));
     #[allow(unused_mut)]
     let mut ret = ret
         .iter()
