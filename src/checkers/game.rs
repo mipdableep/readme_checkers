@@ -193,13 +193,14 @@ fn get_moves_soldier(
         .iter()
         .filter_map(|loc_option| *loc_option)
         .collect::<Vec<Location>>();
+
     #[cfg(test)]
     ret.sort();
 
     ret
 }
 
-fn get_possible_move_soldier(
+fn get_possible_move_or_eat_soldier(
     board: &Board,
     loc: Location,
     moving_piece: PieceType,
@@ -219,6 +220,24 @@ fn get_possible_move_soldier(
             Ok(None) => Some(new_loc + modif),
             _ => None,
         }
+    }
+}
+
+fn get_possible_eat_soldier(
+    board: &Board,
+    loc: Location,
+    moving_piece: PieceType,
+    modif: (i8, i8),
+) -> Option<Location> {
+    let new_loc = loc + modif;
+    match board.loc_index(&new_loc) {
+        Ok(Some(p)) if p.get_color() != moving_piece.get_color() => {
+            match board.loc_index(&(new_loc + modif)) {
+                Ok(None) => Some(new_loc + modif),
+                _ => None,
+            }
+        }
+        _ => None,
     }
 }
 
