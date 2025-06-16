@@ -45,14 +45,16 @@ impl Add<(i8, i8)> for Location {
     }
 }
 
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 pub struct Move {
     from: Location,
     to: Location,
+    eat: Option<Location>,
 }
 
 impl Move {
-    pub fn new(from: Location, to: Location) -> Self {
-        Self { from, to }
+    pub fn new(from: Location, to: Location, eat: Option<Location>) -> Self {
+        Self { from, to, eat }
     }
 }
 
@@ -157,7 +159,7 @@ impl Board {
     }
 }
 
-pub fn get_leagal_moves(board: &Board, loc: Location, last_move: Move) -> Vec<Location> {
+pub fn get_leagal_moves(board: &Board, loc: Location, last_move: Move) -> Vec<Move> {
     let Some(piece) = board
         .loc_index(&loc)
         .expect("trying to move piece at {loc:?}")
@@ -174,12 +176,7 @@ pub fn get_leagal_moves(board: &Board, loc: Location, last_move: Move) -> Vec<Lo
     }
 }
 
-fn get_moves_soldier(
-    board: &Board,
-    loc: Location,
-    piece: PieceType,
-    last_move: Move,
-) -> Vec<Location> {
+fn get_moves_soldier(board: &Board, loc: Location, piece: PieceType, last_move: Move) -> Vec<Move> {
     match (last_move.to == loc, piece.get_color()) {
         (true, Color::Black) => get_moves_soldier_from_modif_vec(
             board,
@@ -224,7 +221,7 @@ fn get_moves_soldier_from_modif_vec(
     moving_piece: PieceType,
     // modif + eat
     modifs: Vec<((i8, i8), bool)>,
-) -> Vec<Location> {
+) -> Vec<Move> {
     let mut ret = Vec::with_capacity(modifs.len());
     for (m, eat) in modifs {
         if eat {
@@ -243,7 +240,7 @@ fn get_moves_soldier_from_modif_vec(
     let mut ret = ret
         .iter()
         .filter_map(|loc_option| *loc_option)
-        .collect::<Vec<Location>>();
+        .collect::<Vec<Move>>();
 
     #[cfg(test)]
     ret.sort();
@@ -256,19 +253,19 @@ fn get_possible_move_or_eat_soldier(
     loc: Location,
     moving_piece: PieceType,
     modif: (i8, i8),
-) -> Option<Location> {
+) -> Option<Move> {
     let new_loc = loc + modif;
     let Ok(idx) = board.loc_index(&new_loc) else {
         return None;
     };
     let Some(piece) = idx else {
-        return Some(new_loc);
+        return Some(Move::new(loc, new_loc, None));
     };
     if piece.get_color() == moving_piece.get_color() {
         None
     } else {
         match board.loc_index(&(new_loc + modif)) {
-            Ok(None) => Some(new_loc + modif),
+            Ok(None) => Some(Move::new(loc, new_loc + modif, Some(new_loc))),
             _ => None,
         }
     }
@@ -279,12 +276,12 @@ fn get_possible_eat_soldier(
     loc: Location,
     moving_piece: PieceType,
     modif: (i8, i8),
-) -> Option<Location> {
+) -> Option<Move> {
     let new_loc = loc + modif;
     match board.loc_index(&new_loc) {
         Ok(Some(p)) if p.get_color() != moving_piece.get_color() => {
             match board.loc_index(&(new_loc + modif)) {
-                Ok(None) => Some(new_loc + modif),
+                Ok(None) => Some(Move::new(loc, new_loc + modif, Some(new_loc))),
                 _ => None,
             }
         }
@@ -292,7 +289,7 @@ fn get_possible_eat_soldier(
     }
 }
 
-fn get_moves_queen(board: &Board, loc: Location) -> Vec<Location> {
+fn get_moves_queen(board: &Board, loc: Location) -> Vec<Move> {
     todo!()
 }
 
