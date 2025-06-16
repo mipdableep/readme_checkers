@@ -323,16 +323,29 @@ mod game_test {
         }
     }
     #[test]
-    fn basic_movment() {
+    fn basic_movment_1() {
         let loc_0 = Location::new(0, 0);
+        let loc_22 = Location::new(2, 2);
         let board = Board::new_game_board();
-        assert_eq!(
-            vec![Location::new(3, 1)],
-            get_leagal_moves(&board, Location::new(2, 0), Move::new(loc_0, loc_0))
-        );
-        let mut v = vec![Location::new(3, 1), Location::new(3, 3)];
+        let mut v = vec![Move::new(Location::new(2, 0), Location::new(3, 1), None)];
         v.sort();
-        let moves = get_leagal_moves(&board, Location::new(2, 2), Move::new(loc_0, loc_0));
+        assert_eq!(
+            v,
+            get_leagal_moves(&board, Location::new(2, 0), Move::new(loc_0, loc_0, None))
+        );
+    }
+
+    #[test]
+    fn basic_movment_2() {
+        let loc_0 = Location::new(0, 0);
+        let loc_22 = Location::new(2, 2);
+        let board = Board::new_game_board();
+        let mut v = vec![
+            Move::new(loc_22, loc_22 + (1, -1), None),
+            Move::new(loc_22, loc_22 + (1, 1), None),
+        ];
+        v.sort();
+        let moves = get_leagal_moves(&board, loc_22, Move::new(loc_0, loc_0, None));
         assert_eq!(v, moves);
     }
 
@@ -340,17 +353,20 @@ mod game_test {
     fn simpble_and_complex_movment_white() {
         let loc_0 = Location::new(0, 0);
         let loc_33 = Location::new(3, 3);
-        let move_0 = Move::new(loc_0, loc_0);
-        let move_to_33 = Move::new(loc_0, loc_33);
+        let move_0 = Move::new(loc_0, loc_0, None);
+        let move_to_33 = Move::new(loc_0, loc_33, None);
         let mut board = Board::new();
         board[3][3] = Some(PieceType::White);
         board[4][2] = Some(PieceType::White);
         board[4][4] = Some(PieceType::Black);
         board[2][4] = Some(PieceType::Black);
-        let mut v = vec![Location::new(5, 5)];
+        let mut v = vec![Move::new(loc_33, loc_33 + (2, 2), Some(loc_33 + (1, 1)))];
         v.sort();
         assert_eq!(v, get_leagal_moves(&board, loc_33, move_0));
-        let mut v = vec![Location::new(5, 5), Location::new(1, 5)];
+        let mut v = vec![
+            Move::new(loc_33, loc_33 + (2, 2), Some(loc_33 + (1, 1))),
+            Move::new(loc_33, loc_33 + (-2, 2), Some(loc_33 + (-1, 1))),
+        ];
         v.sort();
         assert_eq!(v, get_leagal_moves(&board, loc_33, move_to_33));
     }
@@ -358,17 +374,24 @@ mod game_test {
     fn simpble_and_complex_movment_black() {
         let loc_0 = Location::new(0, 0);
         let loc_33 = Location::new(3, 3);
-        let move_0 = Move::new(loc_0, loc_0);
-        let move_to_33 = Move::new(loc_0, loc_33);
+        let move_0 = Move::new(loc_0, loc_0, None);
+        let move_to_33 = Move::new(loc_0, loc_33, None);
         let mut board = Board::new();
         board[3][3] = Some(PieceType::Black);
         board[2][2] = Some(PieceType::Black);
         board[4][4] = Some(PieceType::White);
         board[2][4] = Some(PieceType::White);
-        let mut v = vec![Location::new(1, 5)];
+        let mut v = vec![Move::new(
+            loc_33,
+            Location::new(1, 5),
+            Some(Location::new(2, 4)),
+        )];
         v.sort();
         assert_eq!(v, get_leagal_moves(&board, loc_33, move_0));
-        let mut v = vec![Location::new(5, 5), Location::new(1, 5)];
+        let mut v = vec![
+            Move::new(loc_33, loc_33 + (2, 2), Some(loc_33 + (1, 1))),
+            Move::new(loc_33, loc_33 + (-2, 2), Some(loc_33 + (-1, 1))),
+        ];
         v.sort();
         assert_eq!(v, get_leagal_moves(&board, loc_33, move_to_33));
     }
