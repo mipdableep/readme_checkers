@@ -423,4 +423,22 @@ mod game_test {
         v.sort();
         assert_eq!(v, get_leagal_moves(&board, loc_33, move_to_33));
     }
+    #[test]
+    fn move_after_eat() {
+        let loc_0 = Location::new(0, 0);
+        let loc_33 = Location::new(3, 3);
+        let move_to_33 = Move::new(loc_0, loc_33, None);
+        let mut board = Board::new();
+        board[3][3] = Some(PieceType::White);
+        let v: Vec<Move> = vec![];
+        assert_eq!(v, get_leagal_moves(&board, loc_33, move_to_33));
+        board[4][4] = Some(PieceType::Black);
+        board[2][2] = Some(PieceType::Black);
+        let mut v = vec![
+            Move::new(loc_33, (1, 1).into(), Some((2, 2).into())),
+            Move::new(loc_33, (5, 5).into(), Some((4, 4).into())),
+        ];
+        v.sort();
+        assert_eq!(v, get_leagal_moves(&board, loc_33, move_to_33));
+    }
 }
