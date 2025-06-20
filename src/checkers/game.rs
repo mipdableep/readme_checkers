@@ -172,7 +172,7 @@ pub fn get_leagal_moves(board: &Board, loc: Location, last_move: Move) -> Vec<Mo
 
     match piece {
         PieceType::Black | PieceType::White => get_moves_soldier(board, loc, piece, last_move),
-        PieceType::BlackQueen | PieceType::WhiteQueen => get_moves_queen(board, loc),
+        PieceType::BlackQueen | PieceType::WhiteQueen => get_moves_queen(board, piece, loc),
     }
 }
 
@@ -289,8 +289,30 @@ fn get_possible_eat_soldier(
     }
 }
 
-fn get_moves_queen(board: &Board, loc: Location) -> Vec<Move> {
-    todo!()
+static DIRECTIONS: [(i8, i8); 4] = [(-1, -1), (-1, 1), (1, 1), (1, -1)];
+
+fn get_moves_queen(board: &Board, piece: PieceType, loc: Location) -> Vec<Move> {
+    let mut ret = vec![];
+    'dir_loop: for modif in DIRECTIONS {
+        let mut new_loc = loc;
+        loop {
+            new_loc = new_loc + modif;
+            match board.loc_index(&new_loc) {
+                Ok(Some(p)) if p.get_color() != piece.get_color() => {
+                    let Ok(None) = board.loc_index(&(new_loc + modif)) else {
+                        continue 'dir_loop;
+                    };
+                    ret.push(Move::new(loc, new_loc + modif, Some(new_loc)));
+                    continue 'dir_loop;
+                }
+                Ok(Some(_)) => continue 'dir_loop,
+                Ok(None) => ret.push(Move::new(loc, new_loc, None)),
+                Err(_) => continue 'dir_loop,
+            }
+        }
+    }
+
+    ret
 }
 
 #[cfg(test)]
