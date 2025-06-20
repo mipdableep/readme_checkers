@@ -189,8 +189,8 @@ fn get_moves_soldier(board: &Board, loc: Location, piece: PieceType, last_move: 
             loc,
             piece,
             vec![
-                ((-1, -1), false),
-                ((-1, 1), false),
+                ((-1, -1), true),
+                ((-1, 1), true),
                 ((1, 1), true),
                 ((1, -1), true),
             ],
@@ -200,8 +200,8 @@ fn get_moves_soldier(board: &Board, loc: Location, piece: PieceType, last_move: 
             loc,
             piece,
             vec![
-                ((1, 1), false),
-                ((1, -1), false),
+                ((1, 1), true),
+                ((1, -1), true),
                 ((-1, -1), true),
                 ((-1, 1), true),
             ],
