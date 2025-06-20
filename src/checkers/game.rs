@@ -45,6 +45,12 @@ impl Add<(i8, i8)> for Location {
     }
 }
 
+impl From<(i8, i8)> for Location {
+    fn from(value: (i8, i8)) -> Self {
+        Self::new(value.0, value.1)
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 pub struct Move {
     from: Location,
