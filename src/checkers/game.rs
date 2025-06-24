@@ -484,4 +484,35 @@ mod game_test {
         v.sort();
         assert_eq!(v, get_leagal_moves(&board, loc_33, move_to_33));
     }
+    #[test]
+    fn basic_queen_movment() {
+        let loc_0 = Location::new(0, 0);
+        let loc_33 = Location::new(3, 3);
+        let move_to_33 = Move::new(loc_0, loc_33, None);
+        let move_to_0 = Move::new(loc_0, loc_0, None);
+        let mut board = Board::new();
+        board[3][3] = Some(PieceType::WhiteQueen);
+        let v = vec![
+            (0, 0),
+            (1, 1),
+            (2, 2),
+            (4, 4),
+            (5, 5),
+            (6, 6),
+            (7, 7),
+            (4, 2),
+            (5, 1),
+            (6, 0),
+            (2, 4),
+            (5, 1),
+            (6, 0),
+        ];
+        let mut v: Vec<Move> = v
+            .into_iter()
+            .map(|l| Move::new(loc_33, l.into(), None))
+            .collect();
+        v.sort();
+
+        assert_eq!(v, get_leagal_moves(&board, loc_33, move_to_0));
+    }
 }
