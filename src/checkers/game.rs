@@ -53,9 +53,9 @@ impl From<(i8, i8)> for Location {
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 pub struct Move {
-    from: Location,
-    to: Location,
-    eat: Option<Location>,
+    pub from: Location,
+    pub to: Location,
+    pub eat: Option<Location>,
 }
 
 impl Move {
@@ -68,6 +68,50 @@ impl Move {
 pub struct Board([[Option<PieceType>; 8]; 8]);
 
 impl Board {
+    pub fn print_board_indedex_with_loc_vec(&self, locs: &[Location]) {
+        assert!(locs.is_sorted());
+        let mut ret = String::new();
+
+        ret.push(' ');
+        for c in '0'..='7' {
+            ret.push_str("   ");
+            ret.push(c);
+        }
+
+        for (r_idx, row) in self.iter().enumerate() {
+            ret.push_str(&format!("\n {}", r_idx));
+            for (c_idx, sq) in row.iter().enumerate() {
+                ret.push_str(" [");
+                match sq {
+                    Some(PieceType::Black) => ret.push('b'),
+                    Some(PieceType::BlackQueen) => ret.push('B'),
+                    Some(PieceType::White) => ret.push('w'),
+                    Some(PieceType::WhiteQueen) => ret.push('W'),
+                    None => {
+                        if locs
+                            .binary_search(&((r_idx as i8, c_idx as i8).into()))
+                            .is_ok()
+                        {
+                            ret.push('X');
+                        } else {
+                            ret.push(' ');
+                        }
+                    }
+                }
+                ret.push(']')
+            }
+            ret.push_str(&format!(" {}", r_idx));
+        }
+
+        ret.push('\n');
+        ret.push(' ');
+        for c in '0'..='7' {
+            ret.push_str("   ");
+            ret.push(c);
+        }
+
+        println!("{ret}");
+    }
     pub fn print_board_index(&self) {
         let mut ret = String::new();
 
