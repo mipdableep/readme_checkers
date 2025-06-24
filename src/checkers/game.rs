@@ -176,10 +176,16 @@ pub fn get_leagal_moves(board: &Board, loc: Location, last_move: Move) -> Vec<Mo
         )
     };
 
-    match piece {
+    #[allow(unused_mut)]
+    let mut v = match piece {
         PieceType::Black | PieceType::White => get_moves_soldier(board, loc, piece, last_move),
         PieceType::BlackQueen | PieceType::WhiteQueen => get_moves_queen(board, piece, loc),
-    }
+    };
+
+    #[cfg(test)]
+    v.sort();
+
+    v
 }
 
 fn get_moves_soldier(board: &Board, loc: Location, piece: PieceType, last_move: Move) -> Vec<Move> {
@@ -242,16 +248,9 @@ fn get_moves_soldier_from_modif_vec(
         }
     }
 
-    #[allow(unused_mut)]
-    let mut ret = ret
-        .iter()
+    ret.iter()
         .filter_map(|loc_option| *loc_option)
-        .collect::<Vec<Move>>();
-
-    #[cfg(test)]
-    ret.sort();
-
-    ret
+        .collect::<Vec<Move>>()
 }
 
 fn get_possible_move_or_eat_soldier(
