@@ -522,4 +522,61 @@ mod game_test {
 
         assert_eq!(v, get_leagal_moves(&board, loc_33, move_to_0));
     }
+    #[test]
+    fn queen_eat_regular() {
+        let loc_0 = Location::new(0, 0);
+        let loc_33 = Location::new(3, 3);
+        let move_to_33 = Move::new(loc_0, loc_33, None);
+        let move_to_0 = Move::new(loc_0, loc_0, None);
+        let mut board = Board::new();
+        board[3][3] = Some(PieceType::WhiteQueen);
+        board[5][5] = Some(PieceType::Black);
+        board[1][1] = Some(PieceType::WhiteQueen);
+        board[4][2] = Some(PieceType::BlackQueen);
+        board.print_board_index();
+        let v = vec![
+            // right to left cross
+            // (0, 0),
+            // (1, 1),
+            (2, 2),
+            (4, 4),
+            // (5, 5),
+            // (6, 6),
+            // (7, 7),
+            // left to right cross
+            (0, 6),
+            (1, 5),
+            (2, 4),
+            // (4, 2),
+            // (5, 1),
+            // (6, 0),
+        ];
+        let mut v: Vec<Move> = v
+            .into_iter()
+            .map(|l| Move::new(loc_33, l.into(), None))
+            .collect();
+        v.push(Move::new(loc_33, (6, 6).into(), Some((5, 5).into())));
+        v.push(Move::new(loc_33, (5, 1).into(), Some((4, 2).into())));
+        v.sort();
+        assert_eq!(v, get_leagal_moves(&board, loc_33, move_to_0));
+    }
+
+    #[test]
+    fn queen_eat_after_move() {
+        let loc_0 = Location::new(0, 0);
+        let loc_33 = Location::new(3, 3);
+        let move_to_33 = Move::new(loc_0, loc_33, None);
+        let mut board = Board::new();
+        board[3][3] = Some(PieceType::WhiteQueen);
+        board[5][5] = Some(PieceType::Black);
+        board[1][1] = Some(PieceType::WhiteQueen);
+        board[4][2] = Some(PieceType::BlackQueen);
+        board.print_board_index();
+        let mut v = vec![
+            Move::new(loc_33, (6, 6).into(), Some((5, 5).into())),
+            Move::new(loc_33, (5, 1).into(), Some((4, 2).into())),
+        ];
+        v.sort();
+        assert_eq!(v, get_leagal_moves(&board, loc_33, move_to_33));
+    }
 }
