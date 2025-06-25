@@ -403,7 +403,6 @@ mod game_test {
     #[test]
     fn basic_movment_1() {
         let loc_0 = Location::new(0, 0);
-        let loc_22 = Location::new(2, 2);
         let board = Board::new_game_board();
         let mut v = vec![Move::new(Location::new(2, 0), Location::new(3, 1), None)];
         v.sort();
@@ -495,7 +494,6 @@ mod game_test {
     fn basic_queen_movment() {
         let loc_0 = Location::new(0, 0);
         let loc_33 = Location::new(3, 3);
-        let move_to_33 = Move::new(loc_0, loc_33, None);
         let move_to_0 = Move::new(loc_0, loc_0, None);
         let mut board = Board::new();
         board[3][3] = Some(PieceType::WhiteQueen);
@@ -528,7 +526,6 @@ mod game_test {
     fn queen_eat_regular() {
         let loc_0 = Location::new(0, 0);
         let loc_33 = Location::new(3, 3);
-        let move_to_33 = Move::new(loc_0, loc_33, None);
         let move_to_0 = Move::new(loc_0, loc_0, None);
         let mut board = Board::new();
         board[3][3] = Some(PieceType::WhiteQueen);
@@ -538,20 +535,12 @@ mod game_test {
         board.print_board_index();
         let v = vec![
             // right to left cross
-            // (0, 0),
-            // (1, 1),
             (2, 2),
             (4, 4),
-            // (5, 5),
-            // (6, 6),
-            // (7, 7),
             // left to right cross
             (0, 6),
             (1, 5),
             (2, 4),
-            // (4, 2),
-            // (5, 1),
-            // (6, 0),
         ];
         let mut v: Vec<Move> = v
             .into_iter()
