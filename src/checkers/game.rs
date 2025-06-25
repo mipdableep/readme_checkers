@@ -493,6 +493,7 @@ mod game_test {
         let mut board = Board::new();
         board[3][3] = Some(PieceType::WhiteQueen);
         let v = vec![
+            // right to left cross
             (0, 0),
             (1, 1),
             (2, 2),
@@ -500,10 +501,11 @@ mod game_test {
             (5, 5),
             (6, 6),
             (7, 7),
-            (4, 2),
-            (5, 1),
-            (6, 0),
+            // left to right cross
+            (0, 6),
+            (1, 5),
             (2, 4),
+            (4, 2),
             (5, 1),
             (6, 0),
         ];
