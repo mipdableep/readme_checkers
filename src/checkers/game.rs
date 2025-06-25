@@ -223,7 +223,9 @@ pub fn get_leagal_moves(board: &Board, loc: Location, last_move: Move) -> Vec<Mo
     #[allow(unused_mut)]
     let mut v = match piece {
         PieceType::Black | PieceType::White => get_moves_soldier(board, loc, piece, last_move),
-        PieceType::BlackQueen | PieceType::WhiteQueen => get_moves_queen(board, piece, loc),
+        PieceType::BlackQueen | PieceType::WhiteQueen => {
+            get_moves_queen(board, piece, loc, last_move)
+        }
     };
 
     #[cfg(test)]
@@ -275,7 +277,7 @@ fn get_moves_soldier_from_modif_vec(
     board: &Board,
     loc: Location,
     moving_piece: PieceType,
-    // modif + eat
+    // modif + has to eat
     modifs: Vec<((i8, i8), bool)>,
 ) -> Vec<Move> {
     let mut ret = Vec::with_capacity(modifs.len());
@@ -340,7 +342,8 @@ fn get_possible_eat_soldier(
 
 static DIRECTIONS: [(i8, i8); 4] = [(-1, -1), (-1, 1), (1, 1), (1, -1)];
 
-fn get_moves_queen(board: &Board, piece: PieceType, loc: Location) -> Vec<Move> {
+fn get_moves_queen(board: &Board, piece: PieceType, loc: Location, last_move: Move) -> Vec<Move> {
+    let has_to_eat = last_move.to == loc;
     let mut ret = vec![];
     'dir_loop: for modif in DIRECTIONS {
         let mut new_loc = loc;
@@ -355,7 +358,11 @@ fn get_moves_queen(board: &Board, piece: PieceType, loc: Location) -> Vec<Move> 
                     continue 'dir_loop;
                 }
                 Ok(Some(_)) => continue 'dir_loop,
-                Ok(None) => ret.push(Move::new(loc, new_loc, None)),
+                Ok(None) => {
+                    if !has_to_eat {
+                        ret.push(Move::new(loc, new_loc, None))
+                    }
+                }
                 Err(_) => continue 'dir_loop,
             }
         }
