@@ -1,8 +1,9 @@
 use color_eyre::{eyre::eyre, Result};
 use derive_more::derive::{Deref, DerefMut};
+use serde::{Deserialize, Serialize};
 use std::{fmt::Display, ops::Add};
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum PieceType {
     Black,
     White,
@@ -25,7 +26,7 @@ enum Color {
     White,
 }
 
-#[derive(Debug, Default, PartialEq, Eq, Copy, Clone, PartialOrd, Ord)]
+#[derive(Debug, Default, PartialEq, Eq, Copy, Clone, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct Location {
     row: i8,
     col: i8,
@@ -64,7 +65,7 @@ impl Move {
     }
 }
 
-#[derive(Deref, DerefMut)]
+#[derive(Deref, DerefMut, Serialize, Deserialize)]
 pub struct Board([[Option<PieceType>; 8]; 8]);
 
 impl Board {

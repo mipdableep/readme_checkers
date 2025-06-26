@@ -6,3 +6,11 @@ edition = "2021"
 [dependencies]
 color-eyre = "0.6.5"
 derive_more = { version = "2.0.1", features = ["deref", "deref_mut"] }
+
+[dependencies.serde]
+version = "1.0.219"
+features = ["derive"]
+opt-level = 3
+
+[dependencies.serde_json]
+version = "1.0.140"
