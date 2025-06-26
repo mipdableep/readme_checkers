@@ -374,6 +374,8 @@ fn get_moves_queen(board: &Board, piece: PieceType, loc: Location, last_move: Mo
 
 #[cfg(test)]
 mod game_test {
+    use serde_json::to_value;
+
     use super::*;
     #[test]
     fn loc_add_tuple() {
@@ -570,5 +572,15 @@ mod game_test {
         ];
         v.sort();
         assert_eq!(v, get_leagal_moves(&board, loc_33, move_to_33));
+    }
+
+    #[test]
+    fn test_serialize_deserialize() {
+        let board = Board::new_game_board();
+        let val = serde_json::to_value(board).unwrap();
+        let board: Board = serde_json::from_value(val).unwrap_or(Board::new());
+        for (s, v) in board.iter().zip(Board::new_game_board().iter()) {
+            assert_eq!(s, v)
+        }
     }
 }
