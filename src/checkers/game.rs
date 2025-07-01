@@ -3,6 +3,23 @@ use derive_more::derive::{Deref, DerefMut};
 use serde::{Deserialize, Serialize};
 use std::{fmt::Display, ops::Add};
 
+#[derive(Serialize, Deserialize)]
+pub struct GameState {
+    board: Board,
+    last_move: Move,
+    next_to_play: Color,
+}
+
+impl Default for GameState {
+    fn default() -> Self {
+        Self {
+            board: Default::default(),
+            last_move: Move::new((0, 0).into(), (0, 0).into(), None),
+            next_to_play: Default::default(),
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub enum PieceType {
     Black,
@@ -12,7 +29,7 @@ pub enum PieceType {
 }
 
 impl PieceType {
-    pub fn get_color(&self) -> Color {
+    fn get_color(&self) -> Color {
         match self {
             Self::Black | Self::BlackQueen => Color::Black,
             Self::White | Self::WhiteQueen => Color::White,
@@ -20,10 +37,15 @@ impl PieceType {
     }
 }
 
-#[derive(PartialEq, Eq)]
-enum Color {
+#[derive(PartialEq, Eq, Serialize, Deserialize)]
+pub enum Color {
     Black,
     White,
+}
+impl Default for Color {
+    fn default() -> Self {
+        Self::White
+    }
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Copy, Clone, PartialOrd, Ord, Serialize, Deserialize)]
@@ -52,7 +74,7 @@ impl From<(i8, i8)> for Location {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Serialize, Deserialize)]
 pub struct Move {
     pub from: Location,
     pub to: Location,
@@ -67,6 +89,12 @@ impl Move {
 
 #[derive(Deref, DerefMut, Serialize, Deserialize)]
 pub struct Board([[Option<PieceType>; 8]; 8]);
+
+impl Default for Board {
+    fn default() -> Self {
+        Self::new_game_board()
+    }
+}
 
 impl Board {
     pub fn print_board_indedex_with_loc_vec(&self, locs: &[Location]) {
